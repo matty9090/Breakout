@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 
 using namespace tle;
 using namespace std;
@@ -18,6 +19,8 @@ const int kScreenHeight = 768;
 const string kGameName = "Breakout";
 const string kMediaFolder = "res";
 const EEngineType kEngineType = kTLX;
+
+map<string, string> spriteIndex;
 
 /* 2D Vector */
 
@@ -48,24 +51,29 @@ class DynamicObj {
 
 class Bat : public DynamicObj {
 	public:
-		Bat() {
+		Bat(I3DEngine *e, Vec<float> p) {
+			engine = e;
+			position = p;
 
+			spr = engine->CreateSprite(spriteIndex["bat"], position.x, position.y);
 		}
 
 	private:
-		
+		I3DEngine *engine;
+		ISprite *spr;
 };
 
 /* Destructable Block */
 
 class Block : public DynamicObj {
 	public:
-		Block() {
-
+		Block(I3DEngine *e, Vec<float> p) {
+			engine = e;
+			position = p;
 		}
 
 	private:
-		
+		I3DEngine *engine;
 };
 
 /* Game class */
@@ -76,12 +84,19 @@ class Breakout {
 			engine = New3DEngine(kEngineType);
 
 			setupEngine();
+			addBlocks();
+
+			player = make_shared<Bat>(engine, Vec<float>(10, 10));
 		}
 
 		void setupEngine() {
 			engine->StartWindowed(kScreenWidth, kScreenHeight);
 			engine->SetWindowCaption(kGameName);
 			engine->AddMediaFolder(kMediaFolder);
+		}
+
+		void addBlocks() {
+
 		}
 
 		void run() {
@@ -100,7 +115,8 @@ class Breakout {
 /* Entry point */
 
 void main() {
-	Breakout game;
+	spriteIndex["bat"] = "Bat.png";
 
+	Breakout game;
 	game.run();
 }
