@@ -1,3 +1,6 @@
+// Breakout - UCLan Game
+// Nathan Williams, Jack Hamilton, Matthew Lowe
+
 #include <TL-Engine.h>
 
 #include <string>
@@ -7,11 +10,11 @@ using namespace std;
 
 /* Constants */
 
-const int kScreenWidth			= 1024;
-const int kScreenHeight			= 768;
+const int kScreenWidth = 1024;
+const int kScreenHeight = 768;
 
-const string kMediaFolder		= "res";
-const EEngineType kEngineType	= kTLX;
+const string kMediaFolder = "res";
+const EEngineType kEngineType = kTLX;
 
 /* Player/Bat */
 
@@ -45,6 +48,7 @@ class Breakout {
 		}
 
 	private:
+		Bat player;
 		I3DEngine *engine;
 };
 
