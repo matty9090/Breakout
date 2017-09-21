@@ -13,14 +13,19 @@ using namespace std;
 
 /* Constants */
 
-const int kScreenWidth = 1024;
-const int kScreenHeight = 768;
+const int kScreenWidth = 640;
+const int kScreenHeight = 520;
+const int kBatWidth = 86;
+const int kBatHeight = 26;
+
+const float kBatSpeed = 300.f;
 
 const string kGameName = "Breakout";
 const string kMediaFolder = "res";
 const EEngineType kEngineType = kTLX;
 
 map<string, string> spriteIndex;
+map<string, EKeyCode> keyMap;
 
 /* 2D Vector */
 
@@ -42,6 +47,8 @@ class DynamicObj {
 		void setPos(Vec<float> p) { position = p; }
 		void setVel(Vec<float> v) { velocity = v; }
 
+		virtual void update(float dt) = 0;
+
 	protected:
 		Vec<float> position;
 		Vec<float> velocity;
@@ -58,6 +65,11 @@ class Bat : public DynamicObj {
 			spr = engine->CreateSprite(spriteIndex["bat"], position.x, position.y);
 		}
 
+		void update(float dt) {
+			position = Vec<float>(position.x + velocity.x * dt, position.y + velocity.y * dt);
+			spr->SetPosition(position.x, position.y);
+		}
+
 	private:
 		I3DEngine *engine;
 		ISprite *spr;
@@ -72,6 +84,27 @@ class Block : public DynamicObj {
 			position = p;
 		}
 
+		void update(float dt) {
+
+		}
+
+	private:
+		I3DEngine *engine;
+};
+
+/* Ball */
+
+class Ball : public DynamicObj {
+	public:
+		Ball(I3DEngine *e, Vec<float> p) {
+			engine = e;
+			position = p;
+		}
+
+		void update(float dt) {
+
+		}
+		
 	private:
 		I3DEngine *engine;
 };
@@ -86,7 +119,7 @@ class Breakout {
 			setupEngine();
 			addBlocks();
 
-			player = make_shared<Bat>(engine, Vec<float>(10, 10));
+			player = make_shared<Bat>(engine, Vec<float>(kScreenWidth / 2 - kBatWidth / 2, kScreenHeight - 2 * kBatHeight));
 		}
 
 		void setupEngine() {
@@ -102,7 +135,23 @@ class Breakout {
 		void run() {
 			while (engine->IsRunning()) {
 				engine->DrawScene();
+
+				player->setVel(Vec<float>()); // reset velocity
+
+				handleEvents();
+
+				float dt = engine->Timer();
+
+				player->update(dt);
 			}
+		}
+
+		void handleEvents() {
+			if (engine->KeyHeld(keyMap["BatRight"]))
+				player->setVel(Vec<float>(kBatSpeed, 0.0f));
+
+			if (engine->KeyHeld(keyMap["BatLeft"]))
+				player->setVel(Vec<float>(-kBatSpeed, 0.0f));
 		}
 
 	private:
@@ -115,7 +164,14 @@ class Breakout {
 /* Entry point */
 
 void main() {
+	/* Initialise sprite index */
+	
 	spriteIndex["bat"] = "Bat.png";
+
+	/* Initialise key map */
+
+	keyMap["BatRight"] = Key_D;
+	keyMap["BatLeft"] = Key_A;
 
 	Breakout game;
 	game.run();
