@@ -89,11 +89,14 @@ class Ball : public DynamicObj {
 			engine = e;
 			position = p;
 
+			velocity = Vec<float>(0, -150.f);
+
 			spr = engine->CreateSprite(spriteIndex["ball"], position.x, position.y);
 		}
 
 		void update(float dt) {
-
+			position = Vec<float>(position.x + velocity.x * dt, position.y + velocity.y * dt);
+			spr->SetPosition(position.x, position.y);
 		}
 
 		float getRadius() { return radius; }
@@ -172,6 +175,7 @@ class Breakout {
 				float dt = engine->Timer();
 
 				player->update(dt);
+				ball->update(dt);
 			}
 		}
 
