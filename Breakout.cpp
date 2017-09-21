@@ -13,11 +13,16 @@ using namespace std;
 
 /* Constants */
 
-const int kScreenWidth = 640;
-const int kScreenHeight = 520;
+const int kScreenWidth = 750;
+const int kScreenHeight = 560;
+
 const int kBatWidth = 86;
 const int kBatHeight = 26;
 
+const int kBlockWidth = 64;
+const int kBlockHeight = 32;
+
+const int kNumBlocks = 7;
 const float kBatSpeed = 300.f;
 
 const string kGameName = "Breakout";
@@ -75,23 +80,6 @@ class Bat : public DynamicObj {
 		ISprite *spr;
 };
 
-/* Destructable Block */
-
-class Block : public DynamicObj {
-	public:
-		Block(I3DEngine *e, Vec<float> p) {
-			engine = e;
-			position = p;
-		}
-
-		void update(float dt) {
-
-		}
-
-	private:
-		I3DEngine *engine;
-};
-
 /* Ball */
 
 class Ball : public DynamicObj {
@@ -104,9 +92,36 @@ class Ball : public DynamicObj {
 		void update(float dt) {
 
 		}
+
+		float getRadius() { return radius; }
+
+	private:
+		I3DEngine *engine;
+		float radius;
+};
+
+/* Destructable Block */
+
+class Block : public DynamicObj {
+	public:
+		Block(I3DEngine *e, Vec<float> p, int blockType) {
+			engine = e;
+			position = p;
+
+			spr = engine->CreateSprite(spriteIndex["block" + to_string(blockType)], position.x, position.y);
+		}
+
+		void update(float dt) {
+
+		}
+
+		bool collided(shared_ptr<Ball> ball) {
+
+		}
 		
 	private:
 		I3DEngine *engine;
+		ISprite *spr;
 };
 
 /* Game class */
@@ -129,7 +144,15 @@ class Breakout {
 		}
 
 		void addBlocks() {
+			for (int y = 0; y < 7; y++) {
+				for (int x = 0; x < 10; x++) {
+					Vec<float> position(10 + x * (kBlockWidth + 10), 10 + y * (kBlockHeight + 10));
 
+					shared_ptr<Block> block = make_shared<Block>(engine, position, y);
+					
+					blocks.push_back(block);
+				}
+			}
 		}
 
 		void run() {
@@ -170,6 +193,9 @@ void main() {
 	/* Initialise sprite index */
 	
 	spriteIndex["bat"] = "Bat.png";
+
+	for(int i = 0; i < kNumBlocks; i++)
+		spriteIndex["block" + to_string(i)] = "Block" + to_string(i + 1) + ".png";
 
 	/* Initialise key map */
 
