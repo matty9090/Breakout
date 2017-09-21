@@ -22,6 +22,7 @@ const int kBatHeight = 26;
 const int kBlockWidth = 64;
 const int kBlockHeight = 32;
 
+const int kBallRadius = 8;
 const int kNumBlocks = 7;
 const float kBatSpeed = 300.f;
 
@@ -39,7 +40,7 @@ template <class T> struct Vec {
 	T y;
 
 	Vec() { x = 0; y = 0; }
-	Vec(T u, T v) { x = u, y = v; }
+	Vec(T _x, T _y) { x = _x, y = _y; }
 };
 
 /* Object with position + velocity */
@@ -87,6 +88,8 @@ class Ball : public DynamicObj {
 		Ball(I3DEngine *e, Vec<float> p) {
 			engine = e;
 			position = p;
+
+			spr = engine->CreateSprite(spriteIndex["ball"], position.x, position.y);
 		}
 
 		void update(float dt) {
@@ -97,6 +100,8 @@ class Ball : public DynamicObj {
 
 	private:
 		I3DEngine *engine;
+		ISprite *spr;
+
 		float radius;
 };
 
@@ -135,6 +140,7 @@ class Breakout {
 			addBlocks();
 
 			player = make_shared<Bat>(engine, Vec<float>(kScreenWidth / 2 - kBatWidth / 2, kScreenHeight - 2 * kBatHeight));
+			ball = make_shared<Ball>(engine, Vec<float>(kScreenWidth / 2 - kBallRadius / 2, player->getPos().y - 80));
 		}
 
 		void setupEngine() {
@@ -184,6 +190,8 @@ class Breakout {
 		I3DEngine *engine;
 
 		shared_ptr<Bat> player;
+		shared_ptr<Ball> ball;
+
 		vector<shared_ptr<Block>> blocks;
 };
 
@@ -193,6 +201,7 @@ void main() {
 	/* Initialise sprite index */
 	
 	spriteIndex["bat"] = "Bat.png";
+	spriteIndex["ball"] = "TinyBall.png";
 
 	for(int i = 0; i < kNumBlocks; i++)
 		spriteIndex["block" + to_string(i)] = "Block" + to_string(i + 1) + ".png";
