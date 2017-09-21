@@ -152,6 +152,9 @@ class Breakout {
 
 			if (engine->KeyHeld(keyMap["BatLeft"]))
 				player->setVel(Vec<float>(-kBatSpeed, 0.0f));
+
+			if (engine->KeyHit(keyMap["ExitGame"]))
+				engine->Stop();
 		}
 
 	private:
@@ -170,6 +173,7 @@ void main() {
 
 	/* Initialise key map */
 
+	keyMap["ExitGame"] = Key_Escape;
 	keyMap["BatRight"] = Key_D;
 	keyMap["BatLeft"] = Key_A;
 
